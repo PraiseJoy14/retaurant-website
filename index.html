@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Noir & Gold — Fine Dining</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Tenor+Sans&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #080807;
+      --surface: #0f0f0d;
+      --card: #141412;
+      --gold: #c9a84c;
+      --gold2: #e8d08a;
+      --gold3: rgba(201,168,76,0.12);
+      --text: #f5f0e8;
+      --muted: #8a8478;
+      --border: rgba(201,168,76,0.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Tenor Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    .cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(201,168,76,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, width 0.3s, height 0.3s;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* ── NOISE ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.6rem 6%;
+      background: rgba(8,8,7,0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .nav-logo span { font-style: italic; }
+
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-reserve {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--gold);
+      padding: 0.6rem 1.4rem;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .nav-reserve:hover { background: var(--gold2); }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 22px; height: 1px; background: var(--gold); }
+
+    /* ── HERO ── */
+    #home {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding: 0 6%;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,168,76,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,168,76,0.04) 0%, transparent 60%);
+    }
+
+    .hero-lines {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 0%, transparent 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      animation: fadeUp 1s ease forwards;
+      opacity: 0;
+    }
+
+    .hero-eyebrow-line {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+
+    .hero-eyebrow span {
+      font-size: 0.68rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.8;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4rem, 10vw, 8rem);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      margin-bottom: 2rem;
+      animation: fadeUp 1s 0.2s ease forwards;
+      opacity: 0;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-subtitle {
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      line-height: 2;
+      max-width: 400px;
+      margin: 0 auto 3rem;
+      animation: fadeUp 1s 0.4s ease forwards;
+      opacity: 0;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp 1s 0.6s ease forwards;
+      opacity: 0;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--bg);
+      padding: 1rem 2.5rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: background 0.3s, transform 0.2s;
+      border: none;
+      cursor: none;
+    }
+    .btn-gold:hover { background: var(--gold2); transform: translateY(-2px); }
+
+    .btn-ghost {
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 1rem 2.5rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: border-color 0.3s, color 0.3s, transform 0.2s;
+      cursor: none;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      animation: fadeUp 1s 1s ease forwards;
+      opacity: 0;
+    }
+
+    .hero-scroll span {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(0.7); }
+    }
+
+    /* ── DIVIDER ── */
+    .ornament-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 0 6%;
+      margin: 0;
+    }
+
+    .ornament-divider::before,
+    .ornament-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border));
+    }
+
+    .ornament-divider::after {
+      background: linear-gradient(to left, transparent, var(--border));
+    }
+
+    .ornament {
+      color: var(--gold);
+      font-size: 1.2rem;
+      opacity: 0.6;
+      letter-spacing: 0.5em;
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 8rem 6%; position: relative; z-index: 2; }
+
+    .section-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-eyebrow span {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .section-eyebrow::after {
+      content: '';
+      width: 30px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title em { font-style: italic; color: var(--gold); }
+
+    /* ── ABOUT ── */
+    #about { background: var(--surface); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .about-image-stack {
+      position: relative;
+      height: 500px;
+    }
+
+    .about-img-main {
+      position: absolute;
+      top: 0; left: 0;
+      width: 75%;
+      height: 85%;
+      object-fit: cover;
+      border-radius: 2px;
+      filter: brightness(0.85) contrast(1.1);
+    }
+
+    .about-img-accent {
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 55%;
+      height: 55%;
+      object-fit: cover;
+      border-radius: 2px;
+      border: 3px solid var(--bg);
+      filter: brightness(0.85) contrast(1.1);
+    }
+
+    .about-frame {
+      position: absolute;
+      top: 20px; left: 20px;
+      right: 40px; bottom: 40px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 2;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+
+    /* ── MENU ── */
+    #menu { background: var(--bg); }
+
+    .menu-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .menu-tab {
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0.8rem 2rem;
+      cursor: none;
+      border-bottom: 2px solid transparent;
+      transition: color 0.3s, border-color 0.3s;
+      margin-bottom: -1px;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+
+    .menu-tab.active, .menu-tab:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .menu-item {
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-start: start;
+      transition: background 0.3s;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .menu-item:hover { background: rgba(201,168,76,0.03); }
+
+    .menu-item:nth-child(odd) { border-right: 1px solid var(--border); }
+
+    .menu-item-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 0.4rem;
+    }
+
+    .menu-item-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.7;
+      letter-spacing: 0.03em;
+    }
+
+    .menu-item-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+
+    .menu-panel { display: none; }
+    .menu-panel.active { display: grid; grid-template-columns: 1fr 1fr; }
+
+    /* ── EXPERIENCE ── */
+    #experience { background: var(--surface); }
+
+    .exp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .exp-card {
+      background: var(--card);
+      padding: 3rem 2.5rem;
+      border: 1px solid var(--border);
+      transition: border-color 0.4s, background 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .exp-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .exp-card:hover { border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.03); }
+    .exp-card:hover::after { transform: scaleX(1); }
+
+    .exp-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .exp-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 300;
+      margin-bottom: 0.8rem;
+    }
+
+    .exp-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    /* ── RESERVATION ── */
+    #reservation {
+      background: var(--bg);
+      text-align: center;
+    }
+
+    .res-wrap {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .res-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-top: 3rem;
+      text-align: left;
+    }
+
+    .res-form-full { grid-column: 1 / -1; }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .form-group label {
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 0.9rem 1rem;
+      color: var(--text);
+      font-family: 'Tenor Sans', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.3s;
+      resize: none;
+      -webkit-appearance: none;
+    }
+
+    .form-group select option { background: var(--card); }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--gold); }
+
+    .form-group textarea { height: 100px; }
+
+    .res-submit {
+      grid-column: 1 / -1;
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      padding: 1.1rem 3rem;
+      font-family: 'Tenor Sans', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      cursor: none;
+      border-radius: 2px;
+      transition: background 0.3s, transform 0.2s;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .res-submit:hover { background: var(--gold2); transform: translateY(-2px); }
+
+    /* ── GALLERY ── */
+    #gallery { background: var(--surface); padding-bottom: 0; }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 280px 280px;
+      gap: 3px;
+      margin-top: 4rem;
+    }
+
+    .gallery-item {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gallery-item:first-child { grid-row: 1 / 3; }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.8) contrast(1.1) saturate(0.9);
+      transition: transform 0.7s ease, filter 0.5s;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+      filter: brightness(0.9) contrast(1.05) saturate(1);
+    }
+
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(201,168,76,0.0);
+      transition: background 0.4s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gallery-item:hover .gallery-overlay { background: rgba(201,168,76,0.08); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 4rem 6% 2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 4rem;
+    }
+
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
+    }
+
+    .footer-logo span { font-style: italic; }
+
+    .footer-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.9;
+      max-width: 260px;
+    }
+
+    .footer-heading {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .footer-links a {
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-links a:hover { color: var(--gold); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-bottom p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .nav-links, .nav-reserve { display: none; }
+      .hamburger { display: flex; }
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .about-image-stack { height: 300px; }
+      .exp-grid { grid-template-columns: 1fr; }
+      .menu-panel.active { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .gallery-item:first-child { grid-row: auto; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .res-form { grid-template-columns: 1fr; }
+      .res-form-full { grid-column: 1; }
+      .res-submit { grid-column: 1; }
+      body { cursor: auto; }
+      .cursor, .cursor-ring { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .hero-title { font-size: 3.5rem; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Noir <span>&</span> Gold</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">Story</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+    </ul>
+    <a href="#reservation" class="nav-reserve">Reserve a Table</a>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-line"></div>
+        <span>Est. 2019 · Nairobi, Kenya</span>
+        <div class="hero-eyebrow-line"></div>
+      </div>
+      <h1 class="hero-title">
+        Where Every<br>Meal is an<br><em>Experience</em>
+      </h1>
+      <p class="hero-subtitle">
+        Fine dining reimagined — where<br>culinary artistry meets timeless elegance
+      </p>
+      <div class="hero-buttons">
+        <a href="#menu" class="btn-gold">Explore the Menu</a>
+        <a href="#reservation" class="btn-ghost">Reserve a Table</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <div class="ornament-divider"><span class="ornament">✦ ✦ ✦</span></div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-image-stack reveal">
+        <img class="about-img-main" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80" alt="Restaurant interior"/>
+        <img class="about-img-accent" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80" alt="Fine dining dish"/>
+        <div class="about-frame"></div>
+      </div>
+      <div class="about-text reveal">
+        <div class="section-eyebrow"><span>Our Story</span></div>
+        <h2 class="section-title">A Passion for<br><em>Perfection</em></h2>
+        <p>Born from a love of exceptional ingredients and masterful technique, Noir & Gold opened its doors with a singular vision — to create dining moments that transcend the ordinary.</p>
+        <p>Every dish is a composition. Every evening, a performance. Our team of world-class chefs draws inspiration from classical French technique and the rich culinary traditions of East Africa.</p>
+        <p>We source exclusively from local farmers, coastal fishermen, and artisan producers who share our uncompromising commitment to quality.</p>
+        <div class="about-stats">
+          <div>
+            <div class="stat-num">12</div>
+            <div class="stat-label">Years of Excellence</div>
+          </div>
+          <div>
+            <div class="stat-num">3</div>
+            <div class="stat-label">Michelin Stars</div>
+          </div>
+          <div>
+            <div class="stat-num">40k+</div>
+            <div class="stat-label">Guests Served</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ornament-divider"><span class="ornament">✦ ✦ ✦</span></div>
+
+  <!-- MENU -->
+  <section id="menu">
+    <div class="section-eyebrow reveal"><span>Culinary Journey</span></div>
+    <h2 class="section-title reveal">Our <em>Menu</em></h2>
+
+    <div class="menu-tabs reveal">
+      <button class="menu-tab active" onclick="switchTab('starters', this)">Starters</button>
+      <button class="menu-tab" onclick="switchTab('mains', this)">Main Course</button>
+      <button class="menu-tab" onclick="switchTab('desserts', this)">Desserts</button>
+      <button class="menu-tab" onclick="switchTab('wines', this)">Wine Pairing</button>
+    </div>
+
+    <div id="starters" class="menu-panel active">
+      <div class="menu-item"><div><div class="menu-item-name">Seared Foie Gras</div><div class="menu-item-desc">Brioche toast, fig compote, aged balsamic reduction</div></div><div class="menu-item-price">KSh 3,200</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Tuna Tataki</div><div class="menu-item-desc">Sesame crust, ponzu gel, micro shiso, wasabi cream</div></div><div class="menu-item-price">KSh 2,800</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Lobster Bisque</div><div class="menu-item-desc">Cognac cream, tarragon oil, sourdough croutons</div></div><div class="menu-item-price">KSh 2,400</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Burrata & Heirloom</div><div class="menu-item-desc">Roasted tomatoes, basil oil, Maldon salt, aged prosciutto</div></div><div class="menu-item-price">KSh 2,100</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Scallop Ceviche</div><div class="menu-item-desc">Passionfruit leche de tigre, avocado, crispy quinoa</div></div><div class="menu-item-price">KSh 3,000</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Truffle Arancini</div><div class="menu-item-desc">Black truffle risotto, parmesan foam, crispy sage</div></div><div class="menu-item-price">KSh 1,900</div></div>
+    </div>
+
+    <div id="mains" class="menu-panel">
+      <div class="menu-item"><div><div class="menu-item-name">Wagyu Tenderloin</div><div class="menu-item-desc">A5 grade, bone marrow butter, truffle pomme purée, jus</div></div><div class="menu-item-price">KSh 9,500</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Pan-Seared Sea Bass</div><div class="menu-item-desc">Saffron beurre blanc, fennel confit, samphire, caviar</div></div><div class="menu-item-price">KSh 5,800</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Duck à l'Orange</div><div class="menu-item-desc">Slow-roasted duck breast, Grand Marnier sauce, wild rice</div></div><div class="menu-item-price">KSh 6,200</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Lamb Rack</div><div class="menu-item-desc">Herb crust, rosemary jus, dauphinoise, roasted root vegetables</div></div><div class="menu-item-price">KSh 7,400</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Black Truffle Risotto</div><div class="menu-item-desc">Carnaroli rice, 24-month aged Parmesan, black truffle shavings</div></div><div class="menu-item-price">KSh 4,800</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Whole Lobster</div><div class="menu-item-desc">Thermidor style, gratin topping, tarragon butter, frites</div></div><div class="menu-item-price">KSh 11,200</div></div>
+    </div>
+
+    <div id="desserts" class="menu-panel">
+      <div class="menu-item"><div><div class="menu-item-name">Valrhona Chocolate Soufflé</div><div class="menu-item-desc">72% dark chocolate, Tahitian vanilla ice cream</div></div><div class="menu-item-price">KSh 1,800</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Crème Brûlée</div><div class="menu-item-desc">Madagascar vanilla, caramelized sugar, seasonal berries</div></div><div class="menu-item-price">KSh 1,500</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Mango Tarte Tatin</div><div class="menu-item-desc">Alphonso mango, cardamom caramel, coconut sorbet</div></div><div class="menu-item-price">KSh 1,600</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Opera Cake</div><div class="menu-item-desc">Joconde sponge, coffee buttercream, chocolate ganache</div></div><div class="menu-item-price">KSh 1,700</div></div>
+    </div>
+
+    <div id="wines" class="menu-panel">
+      <div class="menu-item"><div><div class="menu-item-name">Château Margaux 2015</div><div class="menu-item-desc">Bordeaux, France · Rich tannins, blackcurrant, cedar</div></div><div class="menu-item-price">KSh 28,000</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Opus One 2018</div><div class="menu-item-desc">Napa Valley, USA · Elegant, dark fruit, silky finish</div></div><div class="menu-item-price">KSh 32,000</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Dom Pérignon 2012</div><div class="menu-item-desc">Champagne, France · Toasty brioche, citrus zest, minerality</div></div><div class="menu-item-price">KSh 22,000</div></div>
+      <div class="menu-item"><div><div class="menu-item-name">Cloudy Bay Sauvignon</div><div class="menu-item-desc">Marlborough, NZ · Crisp, passionfruit, fresh herbs</div></div><div class="menu-item-price">KSh 8,500</div></div>
+    </div>
+  </section>
+
+  <div class="ornament-divider"><span class="ornament">✦ ✦ ✦</span></div>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="section-eyebrow reveal"><span>Why Choose Us</span></div>
+    <h2 class="section-title reveal">The Noir & Gold <em>Experience</em></h2>
+    <div class="exp-grid" style="margin-top:3rem;">
+      <div class="exp-card reveal">
+        <div class="exp-icon">🍽️</div>
+        <div class="exp-title">Tasting Menus</div>
+        <p class="exp-desc">Embark on a curated 7-course journey through the seasons. Each dish tells a story, each course a new chapter in your evening.</p>
+      </div>
+      <div class="exp-card reveal">
+        <div class="exp-icon">🍷</div>
+        <div class="exp-title">Sommelier Service</div>
+        <p class="exp-desc">Our master sommelier personally guides you through an exceptional cellar of over 800 labels from the world's finest wine regions.</p>
+      </div>
+      <div class="exp-card reveal">
+        <div class="exp-icon">👨‍🍳</div>
+        <div class="exp-title">Chef's Table</div>
+        <p class="exp-desc">An intimate front-row seat to the kitchen. Watch our chefs at work and enjoy an exclusive menu crafted just for your table.</p>
+      </div>
+      <div class="exp-card reveal">
+        <div class="exp-icon">🌹</div>
+        <div class="exp-title">Private Events</div>
+        <p class="exp-desc">From intimate proposals to corporate galas, our events team crafts flawless evenings tailored to your vision and desires.</p>
+      </div>
+      <div class="exp-card reveal">
+        <div class="exp-icon">🎵</div>
+        <div class="exp-title">Live Jazz</div>
+        <p class="exp-desc">Friday and Saturday evenings feature live jazz performances from Nairobi's most celebrated musicians — the perfect accompaniment.</p>
+      </div>
+      <div class="exp-card reveal">
+        <div class="exp-icon">🌿</div>
+        <div class="exp-title">Farm to Table</div>
+        <p class="exp-desc">Every ingredient is traceable. We partner directly with 14 local farms to bring the freshest, most ethically sourced produce to your plate.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="section-eyebrow reveal"><span>Ambience</span></div>
+    <h2 class="section-title reveal">A Feast for the <em>Eyes</em></h2>
+    <div class="gallery-grid">
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80" alt="Restaurant"/><div class="gallery-overlay"></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80" alt="Dish"/><div class="gallery-overlay"></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80" alt="Dining"/><div class="gallery-overlay"></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=400&q=80" alt="Food"/><div class="gallery-overlay"></div></div>
+      <div class="gallery-item"><img src="https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=400&q=80" alt="Wine"/><div class="gallery-overlay"></div></div>
+    </div>
+  </section>
+
+  <!-- RESERVATION -->
+  <section id="reservation">
+    <div class="res-wrap">
+      <div class="section-eyebrow reveal" style="justify-content:center;"><span>Book Your Evening</span></div>
+      <h2 class="section-title reveal">Reserve a <em>Table</em></h2>
+      <p class="reveal" style="color:var(--muted);font-size:0.85rem;letter-spacing:0.05em;line-height:1.9;">We recommend reservations at least 48 hours in advance. For special occasions or parties of 6 or more, please call us directly.</p>
+      <div class="res-form reveal">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" placeholder="Your name"/>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="your@email.com"/>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" placeholder="+254 700 000 000"/>
+        </div>
+        <div class="form-group">
+          <label>Number of Guests</label>
+          <select>
+            <option>1 Guest</option>
+            <option>2 Guests</option>
+            <option>3 Guests</option>
+            <option>4 Guests</option>
+            <option>5 Guests</option>
+            <option>6+ Guests</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Preferred Date</label>
+          <input type="date"/>
+        </div>
+        <div class="form-group">
+          <label>Preferred Time</label>
+          <select>
+            <option>6:00 PM</option>
+            <option>6:30 PM</option>
+            <option>7:00 PM</option>
+            <option>7:30 PM</option>
+            <option>8:00 PM</option>
+            <option>8:30 PM</option>
+            <option>9:00 PM</option>
+          </select>
+        </div>
+        <div class="form-group res-form-full">
+          <label>Special Requests</label>
+          <textarea placeholder="Allergies, anniversaries, dietary preferences..."></textarea>
+        </div>
+        <button class="res-submit" onclick="handleReservation()">Confirm Reservation</button>
+        <div id="resSuccess" style="display:none;grid-column:1/-1;text-align:center;color:var(--gold);font-size:0.82rem;letter-spacing:0.1em;padding:1rem;border:1px solid var(--border);">✦ Your reservation has been received. We look forward to welcoming you. ✦</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Noir <span>&</span> Gold</div>
+        <p class="footer-desc">A sanctuary of fine dining in the heart of Nairobi. Where every evening is an occasion and every meal, a memory.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Navigate</div>
+        <ul class="footer-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">Our Story</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Visit Us</div>
+        <ul class="footer-links">
+          <li><a href="#">14 Westlands Road</a></li>
+          <li><a href="#">Nairobi, Kenya</a></li>
+          <li><a href="#">Mon–Sun: 6PM–11PM</a></li>
+          <li><a href="#">+254 700 000 000</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Follow</div>
+        <ul class="footer-links">
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">TripAdvisor</a></li>
+          <li><a href="#">OpenTable</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Noir & Gold Fine Dining. All rights reserved.</p>
+      <p>Crafted with passion in Nairobi, Kenya</p>
+    </div>
+  </footer>
+
+  <script>
+    // CURSOR
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+    function animateRing() { rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animateRing); }
+    animateRing();
+    document.querySelectorAll('a, button, .menu-tab, .gallery-item').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width = '6px'; cursor.style.height = '6px'; ring.style.width = '50px'; ring.style.height = '50px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width = '10px'; cursor.style.height = '10px'; ring.style.width = '36px'; ring.style.height = '36px'; });
+    });
+
+    // HAMBURGER
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+
+    // MENU TABS
+    function switchTab(id, btn) {
+      document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // SCROLL REVEAL
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => observer.observe(r));
+
+    // RESERVATION
+    function handleReservation() {
+      const success = document.getElementById('resSuccess');
+      success.style.display = 'block';
+      setTimeout(() => success.style.display = 'none', 6000);
+    }
+  </script>
+</body>
+</html>
